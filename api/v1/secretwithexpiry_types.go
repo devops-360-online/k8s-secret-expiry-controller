@@ -1,32 +1,64 @@
+/*
+Copyright 2023.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package v1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// +genclient
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
+// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// SecretWithExpiry is a specification for a SecretWithExpiry resource
+// SecretWithExpirySpec defines the desired state of SecretWithExpiry
+type SecretWithExpirySpec struct {
+	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+
+	// Foo is an example field of SecretWithExpiry. Edit secretwithexpiry_types.go to remove/update
+	Foo string `json:"foo,omitempty"`
+}
+
+// SecretWithExpiryStatus defines the observed state of SecretWithExpiry
+type SecretWithExpiryStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+}
+
+//+kubebuilder:object:root=true
+//+kubebuilder:subresource:status
+
+// SecretWithExpiry is the Schema for the secretwithexpiries API
 type SecretWithExpiry struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec SecretWithExpirySpec `json:"spec"`
+	Spec   SecretWithExpirySpec   `json:"spec,omitempty"`
+	Status SecretWithExpiryStatus `json:"status,omitempty"`
 }
 
-// SecretWithExpirySpec is the spec for a SecretWithExpiry resource
-type SecretWithExpirySpec struct {
-	SecretName string     `json:"secretName"`
-	ExpiryDate metav1.Time `json:"expiryDate"`
-}
+//+kubebuilder:object:root=true
 
-// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-
-// SecretWithExpiryList is a list of SecretWithExpiry resources
+// SecretWithExpiryList contains a list of SecretWithExpiry
 type SecretWithExpiryList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []SecretWithExpiry `json:"items"`
+}
 
-	Items []SecretWithExpiry `json:"items"`
+func init() {
+	SchemeBuilder.Register(&SecretWithExpiry{}, &SecretWithExpiryList{})
 }
