@@ -90,8 +90,10 @@ func main() {
 	}
 
 	if err = (&controllers.SecretWithExpiryReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		Client:   mgr.GetClient(),
+		Log:      ctrl.Log.WithName("controllers").WithName("SecretWithExpiry"),
+		Scheme:   mgr.GetScheme(),
+		Recorder: mgr.GetEventRecorderFor("secretwithexpiry-controller"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "SecretWithExpiry")
 		os.Exit(1)

@@ -9,18 +9,18 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"k8s.io/client-go/tools/record"
 	corev1 "k8s.io/api/core/v1"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
-	
+	"k8s.io/client-go/tools/record"
+
 	expiryv1 "github.com/devops-360-online/k8s-secret-expiry-controller/api/v1"
 )
 
 // SecretWithExpiryReconciler reconciles a SecretWithExpiry object
 type SecretWithExpiryReconciler struct {
 	client.Client
-	Log     logr.Logger
-	Scheme  *runtime.Scheme
+	Log      logr.Logger
+	Scheme   *runtime.Scheme
 	Recorder record.EventRecorder
 }
 
@@ -29,7 +29,7 @@ type SecretWithExpiryReconciler struct {
 //+kubebuilder:rbac:groups=expiry.devops-360.online,resources=secretwithexpiries/finalizers,verbs=update
 
 func (r *SecretWithExpiryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = r.Log.WithValues("secretwithexpiry", req.NamespacedName)
+	logger := r.Log.WithValues("secretwithexpiry", req.NamespacedName)
 
 	var secretWithExpiry expiryv1.SecretWithExpiry
 	if err := r.Get(ctx, req.NamespacedName, &secretWithExpiry); err != nil {
@@ -39,6 +39,7 @@ func (r *SecretWithExpiryReconciler) Reconcile(ctx context.Context, req ctrl.Req
 		}
 
 		// other errors should be returned as they would indicate a problem that needs to be resolved
+		logger.Error(err, "Unable to fetch SecretWithExpiry")
 		return ctrl.Result{}, err
 	}
 

@@ -6,7 +6,7 @@ import (
 
 // SecretWithExpirySpec defines the desired state of SecretWithExpiry
 type SecretWithExpirySpec struct {
-	SecretName string     `json:"secretName"`
+	SecretName string      `json:"secretName"`
 	ExpiryDate metav1.Time `json:"expiryDate"`
 }
 
