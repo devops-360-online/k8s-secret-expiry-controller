@@ -49,7 +49,7 @@ func (r *SecretWithExpiryReconciler) Reconcile(ctx context.Context, req ctrl.Req
 		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpired", "The secret " + secretWithExpiry.Name + " in the namespace "+ secretWithExpiry.Namespace +" has expired.")
 	} else if time.Now().Add(7 * 24 * time.Hour).After(secretWithExpiry.Spec.ExpiryDate.Time) {
 		// Secret will expire in less than 24 hours, generate warning event
-		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpiring", "The secret" + secretWithExpiry.Name + "will expire in less than 7 days.")
+		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpiring", "The secret " + secretWithExpiry.Name + " in the namespace "+ secretWithExpiry.Namespace +" will expire in less than 7 days.")
 	}
 
 	return ctrl.Result{}, nil
