@@ -70,7 +70,7 @@ spec:
             - /manager
           args:
             - --leader-elect
-          image: nasrladib/k8s-secret-expiry-controller:latest
+          image: nasrladib/k8s-secret-expiry-controller:v0.2.0
           name: manager
           securityContext:
             allowPrivilegeEscalation: false
