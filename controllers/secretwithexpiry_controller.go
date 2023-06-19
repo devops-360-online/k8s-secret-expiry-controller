@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"time"
+	"fmt"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -43,16 +44,19 @@ func (r *SecretWithExpiryReconciler) Reconcile(ctx context.Context, req ctrl.Req
 		return ctrl.Result{}, err
 	}
 
+	// Calculate remaining time until the secret will expire
+	remainingTime := time.Until(secretWithExpiry.Spec.ExpiryDate.Time)
+
 	// Check if secret is about to expire or has expired
 	if time.Now().After(secretWithExpiry.Spec.ExpiryDate.Time) {
 		// Secret has expired, generate error event
-		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpired", "The secret "+secretWithExpiry.Name+" in the namespace "+secretWithExpiry.Namespace+" has expired.")
-	} else if time.Now().Add(7 * 24 * time.Hour).After(secretWithExpiry.Spec.ExpiryDate.Time) {
+		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpired", "The secret "+secretWithExpiry.Spec.SecretName+" associated with "+secretWithExpiry.Name+" in the namespace "+secretWithExpiry.Namespace+" has expired.")
+	} else if remainingTime <= 7 * 24 * time.Hour {
 		// Secret will expire in less than 7 days, generate warning event
-		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpiring", "The secret "+secretWithExpiry.Name+" in the namespace "+secretWithExpiry.Namespace+" will expire in less than 7 days.")
+		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpiring", fmt.Sprintf("The secret %s associated with %s in the namespace %s will expire in %v.", secretWithExpiry.Spec.SecretName, secretWithExpiry.Name, secretWithExpiry.Namespace, remainingTime))
 	} else {
 		// Secret expiry date has been updated, generate a success event
-		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeNormal, "SecretExpiryUpdated", "The expiry date for the secret "+secretWithExpiry.Name+" in the namespace "+secretWithExpiry.Namespace+" has been successfully updated to "+secretWithExpiry.Spec.ExpiryDate.String()+".")
+		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeNormal, "SecretExpiryUpdated", fmt.Sprintf("The expiry date for the secret %s associated with %s in the namespace %s has been successfully updated to %s.", secretWithExpiry.Spec.SecretName, secretWithExpiry.Name, secretWithExpiry.Namespace, secretWithExpiry.Spec.ExpiryDate.String()))
 	}
 
 	return ctrl.Result{RequeueAfter: time.Hour}, nil
