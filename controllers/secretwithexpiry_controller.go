@@ -46,16 +46,16 @@ func (r *SecretWithExpiryReconciler) Reconcile(ctx context.Context, req ctrl.Req
 	// Check if secret is about to expire or has expired
 	if time.Now().After(secretWithExpiry.Spec.ExpiryDate.Time) {
 		// Secret has expired, generate error event
-		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpired", "The secret " + secretWithExpiry.Name + " in the namespace "+ secretWithExpiry.Namespace +" has expired.")
+		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpired", "The secret "+secretWithExpiry.Name+" in the namespace "+secretWithExpiry.Namespace+" has expired.")
 	} else if time.Now().Add(7 * 24 * time.Hour).After(secretWithExpiry.Spec.ExpiryDate.Time) {
 		// Secret will expire in less than 7 days, generate warning event
-		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpiring", "The secret " + secretWithExpiry.Name + " in the namespace "+ secretWithExpiry.Namespace +" will expire in less than 7 days.")
+		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeWarning, "SecretExpiring", "The secret "+secretWithExpiry.Name+" in the namespace "+secretWithExpiry.Namespace+" will expire in less than 7 days.")
 	} else {
 		// Secret expiry date has been updated, generate a success event
-		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeNormal, "SecretExpiryUpdated", "The expiry date for the secret " + secretWithExpiry.Name + " in the namespace " + secretWithExpiry.Namespace + " has been successfully updated to " + secretWithExpiry.Spec.ExpiryDate.String() + ".")
+		r.Recorder.Event(&secretWithExpiry, corev1.EventTypeNormal, "SecretExpiryUpdated", "The expiry date for the secret "+secretWithExpiry.Name+" in the namespace "+secretWithExpiry.Namespace+" has been successfully updated to "+secretWithExpiry.Spec.ExpiryDate.String()+".")
 	}
 
-	return ctrl.Result{}, nil
+	return ctrl.Result{RequeueAfter: time.Hour}, nil
 }
 
 func (r *SecretWithExpiryReconciler) SetupWithManager(mgr ctrl.Manager) error {
