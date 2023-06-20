@@ -25,6 +25,46 @@ kubectl apply -k config/crd
 kubectl apply -k config/default
 ```
 
+### Creating a SecretWithExpiry Object
+
+Create a new file named `secretWithExpiry.yaml` with the following contents:
+
+```yaml
+apiVersion: expiry.devops-360.online/v1
+kind: SecretWithExpiry
+metadata:
+  name: example-secretwithexpiry
+spec:
+  secretName: my-secret
+  expiryDate: "2023-06-30T00:00:00Z"
+```
+
+Replace `"2023-06-30T00:00:00Z"` with the actual expiry date you want for your secret. The date must be in the format `YYYY-MM-DDTHH:MM:SSZ`.
+
+Then, apply this file:
+
+```sh
+kubectl apply -f secretWithExpiry.yaml
+```
+
+### Viewing SecretWithExpiry Events
+
+To view the events associated with a SecretWithExpiry object:
+
+```sh
+kubectl describe secretwithexpiry example-secretwithexpiry
+```
+
+This command will output a description of the SecretWithExpiry object, including a list of recent events. The events will show if the secret has expired, is about to expire in less than 7 days, or if the expiry date has been updated.
+
+Or
+
+```sh
+kubectl get events
+```
+
+![warn_expiring_secret_event](images/warn_expiring_secret_event.png)
+
 ## Build and push your image to the location specified by IMG
 
 ```sh
